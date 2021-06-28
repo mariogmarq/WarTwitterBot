@@ -7,19 +7,19 @@ import "gorm.io/gorm"
 // count
 type Fighter struct {
 	gorm.Model
-	Name      string
-	Alive     bool
-	Teammate  *Fighter
-	Killcount int8
+	Name       string
+	Alive      bool
+	TeammateId uint
+	Killcount  uint
 }
 
 // NewFighter creates a fighter with the default values that are expected and follows the
 // conventions to the pictures(disabled for now)
 func NewFighter(name string) *Fighter {
 	return &Fighter{
-		Name:      name,
-		Alive:     false,
-		Teammate:  nil,
-		Killcount: 0,
+		Name:       name,
+		Alive:      true,
+		TeammateId: 0, //Gorm first index is 1
+		Killcount:  0,
 	}
 }
