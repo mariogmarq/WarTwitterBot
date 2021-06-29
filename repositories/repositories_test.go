@@ -39,4 +39,12 @@ func TestDBIntegration(t *testing.T) {
 		t.Fatalf("AliveFightersIDs not working")
 	}
 
+	repo.KillPlayerByID(2)
+	ids = repo.AliveFightersIDs()
+	if len(ids) != 1 || ids[0] != 1 {
+		t.Fatalf("KillPlayerByID not working")
+	}
+
+	repo.KillPlayerByID(10) //it does not crash
+
 }

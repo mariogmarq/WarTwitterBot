@@ -98,3 +98,20 @@ func (r *Repository) AliveFightersIDs() []int {
 
 	return ids
 }
+
+// Update a player with a given id to kill him
+func (r *Repository) KillPlayerByID(id uint) {
+	r.db.Model(&models.Fighter{}).Where("id = ?", id).Update("Alive", false)
+}
+
+//Adds one to player killcount
+func (r *Repository) AddKillToPlayerByID(id uint) {
+	//retrieve previous killcount
+	var kills int
+	result := r.db.Model(&models.Fighter{}).Where("id = ?").Select("killcount").First(&kills)
+	if result.Error != nil {
+		return
+	}
+
+	r.db.Model(&models.Fighter{}).Where("id = ?", id).Update("killcount", kills+1)
+}
