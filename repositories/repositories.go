@@ -15,7 +15,7 @@ type Repository struct {
 }
 
 // Open the database, makes migrations and return the database
-func OpenRepositories() Repository {
+func OpenRepositories() *Repository {
 	db, err := gorm.Open(sqlite.Open(os.Getenv("DB_URL")))
 
 	if err != nil {
@@ -26,7 +26,7 @@ func OpenRepositories() Repository {
 		panic(err.Error())
 	}
 
-	return Repository{db: db}
+	return &Repository{db: db}
 }
 
 func migrations(db *gorm.DB) error {
@@ -43,7 +43,10 @@ func migrations(db *gorm.DB) error {
 func (r *Repository) AddFighter(names ...string) {
 	var fighters []*models.Fighter
 	for _, name := range names {
-		fighters = append(fighters, models.NewFighter(name))
+		fighter, err := models.NewFighter(name)
+		if err == nil {
+			fighters = append(fighters, fighter)
+		}
 	}
 
 	r.db.Create(fighters)
@@ -92,8 +95,8 @@ func (r *Repository) GetPhraseByN(N int) (models.Phrase, error) {
 }
 
 // Return an array of the fighters that are still alive
-func (r *Repository) AliveFightersIDs() []int {
-	var ids []int
+func (r *Repository) AliveFightersIDs() []uint {
+	var ids []uint
 	r.db.Model(&models.Fighter{}).Where(&models.Fighter{Alive: true}, "Alive").Select("id").Find(&ids)
 
 	return ids
@@ -102,13 +105,14 @@ func (r *Repository) AliveFightersIDs() []int {
 // Update a player with a given id to kill him
 func (r *Repository) KillPlayerByID(id uint) {
 	r.db.Model(&models.Fighter{}).Where("id = ?", id).Update("Alive", false)
+	r.db.Model(&models.Fighter{}).Where("teammate_id = ?", id).Update("teammate_id", 0)
 }
 
 //Adds one to player killcount
 func (r *Repository) AddKillToPlayerByID(id uint) {
 	//retrieve previous killcount
 	var kills int
-	result := r.db.Model(&models.Fighter{}).Where("id = ?").Select("killcount").First(&kills)
+	result := r.db.Model(&models.Fighter{}).Where("id = ?", id).Select("killcount").First(&kills)
 	if result.Error != nil {
 		return
 	}

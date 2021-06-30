@@ -59,7 +59,7 @@ func NewPhrase(phrase string) (*Phrase, error) {
 	}
 
 	if i <= 2 {
-		return &Phrase{}, errors.New("Not enough different $X, at least 2")
+		return &Phrase{}, errors.New("not enough different $X, at least 2")
 	}
 
 	return &Phrase{Phrase: phrase, N: i - 1}, nil

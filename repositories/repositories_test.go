@@ -5,6 +5,8 @@ import (
 	"testing"
 )
 
+//TODO: Use SqlMock or other mocking library for this test
+
 // To be run in a docker container
 func TestDBIntegration(t *testing.T) {
 	repo := OpenRepositories()
@@ -29,7 +31,7 @@ func TestDBIntegration(t *testing.T) {
 		t.Fatalf("Expected name David, got %s", fighter.Name)
 	}
 
-	fighter, err = repo.GetFighterById(0)
+	_, err = repo.GetFighterById(0)
 	if err == nil {
 		t.Fatalf("Expected error got none on GetFighterById(0)")
 	}
