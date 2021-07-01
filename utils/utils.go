@@ -2,6 +2,7 @@ package utils
 
 import (
 	"errors"
+	"os"
 	"strings"
 )
 
@@ -21,4 +22,27 @@ func ParseImageName(name string) (string, error) {
 	name = strings.Title(strings.ToLower(name))
 
 	return name, nil
+}
+
+func ReadNamesFromImagesFolder() []string {
+	//read all images from directory
+	entries, err := os.ReadDir(os.Getenv("IMAGES_DIR"))
+	Must(err)
+
+	var filenames []string
+	for _, entry := range entries {
+		if entry.Type().IsRegular() {
+			name, err := ParseImageName(entry.Name())
+			Must(err)
+			filenames = append(filenames, name)
+		}
+	}
+
+	return filenames
+}
+
+func Must(e error) {
+	if e != nil {
+		panic(e.Error())
+	}
 }

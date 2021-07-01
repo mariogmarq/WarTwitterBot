@@ -4,6 +4,7 @@ package repositories
 import (
 	"github/mariogmarq/WarTwitterBot/models"
 	"os"
+	"sync"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -14,25 +15,36 @@ type Repository struct {
 	db *gorm.DB
 }
 
+//Repository is a singleton
+var singleton *Repository
+var once = sync.Once{}
+
+func GetInstance() *Repository {
+	once.Do(func() {
+		singleton = openRepositories()
+	})
+
+	return singleton
+}
+
 // Open the database, makes migrations and return the database
-func OpenRepositories() *Repository {
+func openRepositories() *Repository {
 	db, err := gorm.Open(sqlite.Open(os.Getenv("DB_URL")))
 
 	if err != nil {
 		panic(err.Error())
 	}
 
-	if migrations(db) != nil {
+	if err = migrations(db); err != nil {
 		panic(err.Error())
 	}
 
 	return &Repository{db: db}
 }
 
+//Migrate all models to database
 func migrations(db *gorm.DB) error {
-	//Migrate phrases and users
-	err := db.AutoMigrate(&models.Fighter{}, &models.Phrase{})
-	if err != nil {
+	if err := db.AutoMigrate(&models.Fighter{}, &models.Phrase{}); err != nil {
 		return err
 	}
 

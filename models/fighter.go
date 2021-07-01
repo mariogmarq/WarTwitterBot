@@ -39,6 +39,7 @@ func NewFighter(picture string) (*Fighter, error) {
 	}, nil
 }
 
+// Return the api of a fighter from himself
 func (f *Fighter) GetApi() FighterApi {
 	return FighterApi{
 		Name:    f.Name,

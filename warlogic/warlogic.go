@@ -2,66 +2,60 @@
 package warlogic
 
 import (
-	"errors"
 	"github/mariogmarq/WarTwitterBot/models"
 	"github/mariogmarq/WarTwitterBot/repositories"
 	"github/mariogmarq/WarTwitterBot/utils"
 	"math/rand"
-	"os"
+	"sync"
 )
 
 var (
 	repo     *repositories.Repository
 	messages chan []models.FighterApi
 	winner   chan []models.FighterApi
+	playing  chan byte
+	once     = sync.Once{} //used to initialize the rest of vars
 )
 
 // Return an array of all players name
 func readPlayersName() []string {
-	//read all images from directory
-	entries, err := os.ReadDir(os.Getenv("IMAGES_DIR"))
-	must(err)
-
-	var filenames []string
-	for _, entry := range entries {
-		if entry.Type().IsRegular() {
-			name, err := utils.ParseImageName(entry.Name())
-			must(err)
-			filenames = append(filenames, name)
-		}
-	}
-
-	return filenames
+	return utils.ReadNamesFromImagesFolder()
 }
 
 // Starts the game, returns two channels of arrays of fighterApis, the first one shows the fighters involved in a kill, the second one the winners of the game
 // you only can read from the seccond one once the first one has been closed
 func StartGame() (chan []models.FighterApi, chan []models.FighterApi) {
-	messages = make(chan []models.FighterApi)
-	winner = make(chan []models.FighterApi)
-	repo = repositories.OpenRepositories()
 
-	go func() {
-		repo.AddFighter(readPlayersName()...)
-		repo.AddPhrase("$1 kills $2")
-		var err error = nil
-		for err == nil {
-			err = turn()
-		}
-	}()
+	once.Do(func() {
+		messages = make(chan []models.FighterApi, 1)
+		winner = make(chan []models.FighterApi, 1)
+		playing = make(chan byte, 1)
+		repo = repositories.GetInstance()
+
+		go func() {
+			repo.AddFighter(readPlayersName()...)
+			repo.AddPhrase("$1 kills $2")
+
+			turn()
+			for range playing {
+				turn()
+			}
+
+		}()
+
+	})
 
 	return messages, winner
 }
 
 // Make a player to kill other advancing a turn
-func turn() error {
+func turn() {
 	ids := repo.AliveFightersIDs()
 
 	// Checks if the game has ended
 	if haveAWinner(ids) {
-		winner <- winnerApi(ids[0])
-		close(winner)
-		return errors.New("end")
+		winnerMessage(ids[0])
+		close(playing)
 	}
 
 	// fighters that interact in the kill
@@ -103,15 +97,12 @@ func turn() error {
 	messages <- apis
 
 	// Kill the player and add 1 to the killcount
-	for index, f := range fighters {
-		if index == len(fighters)-1 {
-			repo.KillPlayerByID(f.ID)
-		} else {
-			repo.AddKillToPlayerByID(f.ID)
-		}
+	for i := 0; i < len(fighters)-1; i++ {
+		repo.AddKillToPlayerByID(fighters[i].ID)
 	}
+	repo.KillPlayerByID(fighters[len(fighters)-1].ID)
 
-	return nil
+	playing <- '0'
 }
 
 // Checks if a fighter has won the game
@@ -142,20 +133,21 @@ func winnerApi(id uint) []models.FighterApi {
 	var apis []models.FighterApi
 
 	fighter, err := repo.GetFighterById(id)
-	must(err)
+	utils.Must(err)
 	apis = append(apis, fighter.GetApi())
 
 	if fighter.TeammateId != 0 {
 		fighter2, err := repo.GetFighterById(fighter.ID)
-		must(err)
+		utils.Must(err)
 		apis = append(apis, fighter2.GetApi())
 	}
 
 	return apis
 }
 
-func must(e error) {
-	if e != nil {
-		panic(e.Error())
-	}
+// Send the winner message and return the error to stop the turn
+func winnerMessage(id uint) {
+	close(messages)
+	winner <- winnerApi(id)
+	close(winner)
 }
