@@ -1,6 +1,8 @@
 
 
-build:
+build: FORCE
 	bash ./build/build.sh
-run:
+run: FORCE
 	bash ./build/run.sh
+
+FORCE:

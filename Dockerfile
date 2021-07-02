@@ -1,7 +1,7 @@
 FROM golang:latest
 
 WORKDIR /usr/app/
-COPY .. .
+COPY . .
 
 ENV DB_URL /usr/app/the_database.db
 #RUN touch ${DB_URL} //Create the DB in each execution, just for testing porposes

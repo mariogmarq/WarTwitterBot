@@ -10,7 +10,7 @@ import (
 // To be run in a docker container
 func TestDBIntegration(t *testing.T) {
 	repo := openRepositories()
-	repo.AddFighter("David", "Jose")
+	repo.AddFighter("David.png", "Jose.png")
 	repo.AddPhrase("$1 kills $2", "$1 kills $1")
 
 	phrases, err := repo.GetPhrasesByN(2)
