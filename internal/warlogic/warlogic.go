@@ -5,6 +5,7 @@ import (
 	"github/mariogmarq/WarTwitterBot/internal/models"
 	"github/mariogmarq/WarTwitterBot/internal/repository"
 	"github/mariogmarq/WarTwitterBot/utils"
+	"log"
 	"math/rand"
 	"sync"
 )
@@ -50,6 +51,7 @@ func StartGame() (chan []models.FighterApi, chan []models.FighterApi) {
 
 // Make a player to kill other advancing a turn
 func turn() {
+	log.Println("Running turn")
 	ids := repo.AliveFightersIDs()
 
 	// Checks if the game has ended

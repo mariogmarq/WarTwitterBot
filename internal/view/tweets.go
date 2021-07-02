@@ -2,13 +2,15 @@
 package view
 
 import (
+	"context"
 	"github/mariogmarq/WarTwitterBot/internal/models"
 	"github/mariogmarq/WarTwitterBot/internal/repository"
+	"log"
 	"os"
 	"time"
 
 	"github.com/dghubble/go-twitter/twitter"
-	"github.com/dghubble/oauth1"
+	"golang.org/x/oauth2/clientcredentials"
 )
 
 type View struct {
@@ -16,10 +18,16 @@ type View struct {
 }
 
 func CreateClient() View {
-	config := oauth1.NewConfig(os.Getenv("CONSUMER_KEY"), os.Getenv("CONSUMER_SECRET"))
-	token := oauth1.NewToken(os.Getenv("ACCESS_TOKEN"), os.Getenv("ACCESS_SECRET"))
+	config := &clientcredentials.Config{
+		ClientID:     os.Getenv("CONSUMER_KEY"),
+		ClientSecret: os.Getenv("CONSUMER_SECRET"),
+		TokenURL:     "https://api.twitter.com/oauth2/token",
+	}
+	log.Println(config.ClientID)
+	log.Println(config.ClientSecret)
 
-	httpClient := config.Client(oauth1.NoContext, token)
+	httpClient := config.Client(context.Background())
+
 	client := twitter.NewClient(httpClient)
 
 	return View{client}
@@ -27,9 +35,11 @@ func CreateClient() View {
 
 // Post an event
 func (v View) postUpdate(phrase string) {
+	log.Printf("Posting %s", phrase)
 	_, _, err := v.client.Statuses.Update(phrase, nil)
 
 	for err != nil {
+		log.Println(err.Error())
 		time.Sleep(time.Minute * 2)
 		_, _, err = v.client.Statuses.Update(phrase, nil)
 	}

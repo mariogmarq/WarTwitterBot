@@ -1,5 +1,7 @@
 
 
+all: build run
+
 build: FORCE
 	bash ./build/build.sh
 run: FORCE

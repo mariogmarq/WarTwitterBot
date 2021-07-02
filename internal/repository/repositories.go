@@ -3,6 +3,7 @@ package repository
 
 import (
 	"github/mariogmarq/WarTwitterBot/internal/models"
+	"log"
 	"os"
 	"sync"
 
@@ -21,6 +22,7 @@ var once = sync.Once{}
 
 func GetInstance() *Repository {
 	once.Do(func() {
+		log.Println("Creating repository")
 		singleton = openRepositories()
 	})
 

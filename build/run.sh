@@ -1,2 +1,2 @@
 #!/bin/bash
-sudo docker container run --env-file .env.container civilwardebug
+sudo docker container run --env-file ./build/.env.container civilwardebug

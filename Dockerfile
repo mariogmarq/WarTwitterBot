@@ -9,6 +9,7 @@ ENV DB_URL /usr/app/the_database.db
 ENV IMAGES_DIR /usr/app/assets/images
 
 RUN go test ./...
+RUN rm ${DB_URL}
 RUN go build -o civilbot
 
 CMD [ "./civilbot" ]

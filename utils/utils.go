@@ -32,9 +32,7 @@ func ReadNamesFromImagesFolder() []string {
 	var filenames []string
 	for _, entry := range entries {
 		if entry.Type().IsRegular() {
-			name, err := ParseImageName(entry.Name())
-			Must(err)
-			filenames = append(filenames, name)
+			filenames = append(filenames, entry.Name())
 		}
 	}
 
