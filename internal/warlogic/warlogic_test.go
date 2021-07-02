@@ -6,5 +6,5 @@ import (
 )
 
 func Test_initGame(t *testing.T) {
-	//TODO Sqlmock
+	//TODO test with interface
 }

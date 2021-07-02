@@ -22,7 +22,7 @@ type Phrase struct {
 // Maps a phrase to two players
 // return error in case the map has not been correct (not all players could be
 // mapped or there is room for more players
-func (p *Phrase) MapToPlayers(fighters ...*Fighter) (string, error) {
+func (p *Phrase) MapToPlayers(fighters ...FighterApi) (string, error) {
 	if p.N != len(fighters) {
 		return "", errors.New("phrase.N and the number of arguments passed does not match")
 	}
