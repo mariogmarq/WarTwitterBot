@@ -1,8 +1,8 @@
 // Database wrapper
-package repositories
+package repository
 
 import (
-	"github/mariogmarq/WarTwitterBot/models"
+	"github/mariogmarq/WarTwitterBot/internal/models"
 	"os"
 	"sync"
 
@@ -10,7 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
-// Implements all database operations
+// Implements IRepository
 type Repository struct {
 	db *gorm.DB
 }

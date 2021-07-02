@@ -1,7 +1,6 @@
 
 
 build:
-	sudo docker build --no-cache . -t "civilwardebug"
-
+	bash ./build/build.sh
 run:
-	sudo docker container run civilwardebug
+	bash ./build/run.sh

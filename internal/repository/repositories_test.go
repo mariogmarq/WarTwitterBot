@@ -1,5 +1,5 @@
 // Database wrapper
-package repositories
+package repository
 
 import (
 	"testing"

@@ -2,15 +2,15 @@
 package warlogic
 
 import (
-	"github/mariogmarq/WarTwitterBot/models"
-	"github/mariogmarq/WarTwitterBot/repositories"
+	"github/mariogmarq/WarTwitterBot/internal/models"
+	"github/mariogmarq/WarTwitterBot/internal/repository"
 	"github/mariogmarq/WarTwitterBot/utils"
 	"math/rand"
 	"sync"
 )
 
 var (
-	repo     *repositories.Repository
+	repo     repository.IRepository
 	messages chan []models.FighterApi
 	winner   chan []models.FighterApi
 	playing  chan byte
@@ -29,8 +29,8 @@ func StartGame() (chan []models.FighterApi, chan []models.FighterApi) {
 	once.Do(func() {
 		messages = make(chan []models.FighterApi, 1)
 		winner = make(chan []models.FighterApi, 1)
-		playing = make(chan byte, 1)
-		repo = repositories.GetInstance()
+		playing = make(chan byte, 1) // If its opened then the game is not finished
+		repo = repository.GetInstance()
 
 		go func() {
 			repo.AddFighter(readPlayersName()...)
