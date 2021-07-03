@@ -10,7 +10,7 @@ func TestPhrase_MapToPlayers(t *testing.T) {
 		N      int
 	}
 	type args struct {
-		fighters []FighterApi
+		fighters []*FighterApi
 	}
 	tests := []struct {
 		name    string
@@ -26,7 +26,7 @@ func TestPhrase_MapToPlayers(t *testing.T) {
 				N:      2,
 			},
 			args: args{
-				fighters: []FighterApi{
+				fighters: []*FighterApi{
 					{Name: "Mario"},
 				},
 			},
@@ -40,7 +40,7 @@ func TestPhrase_MapToPlayers(t *testing.T) {
 				N:      2,
 			},
 			args: args{
-				fighters: []FighterApi{
+				fighters: []*FighterApi{
 					{Name: "Mario"}, {Name: "Dani"},
 				},
 			},

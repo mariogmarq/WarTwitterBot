@@ -90,6 +90,13 @@ func (r *Repository) GetFighterById(id uint) (*models.Fighter, error) {
 	return fighter, result.Error
 }
 
+func (r *Repository) GetFighterAPIById(id uint) (*models.FighterApi, error) {
+	fighter := new(models.FighterApi)
+	result := r.db.First(fighter, id)
+
+	return fighter, result.Error
+}
+
 // Returns all the phrases with a given size
 func (r *Repository) GetPhrasesByN(N int) ([]models.Phrase, error) {
 	var phrases []models.Phrase
@@ -108,10 +115,11 @@ func (r *Repository) GetPhraseByN(N int) (models.Phrase, error) {
 	return phrase, result.Error
 }
 
-// Return an array of the fighters that are still alive
+// Return an array of up to 2 fighters that are still alive
+// if only one is returned then it is the winner
 func (r *Repository) AliveFightersIDs() []uint {
 	var ids []uint
-	r.db.Model(&models.Fighter{}).Where(&models.Fighter{Alive: true}, "Alive").Select("id").Find(&ids)
+	r.db.Model(&models.Fighter{}).Where(&models.Fighter{Alive: true}, "Alive").Select("id").Limit(2).Find(&ids)
 
 	return ids
 }

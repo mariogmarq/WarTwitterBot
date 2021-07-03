@@ -13,4 +13,5 @@ type IRepository interface {
 	AliveFightersIDs() []uint
 	KillPlayerByID(id uint)
 	AddKillToPlayerByID(id uint)
+	GetFighterAPIById(id uint) (*models.FighterApi, error)
 }

@@ -27,6 +27,7 @@ func CreateClient() View {
 }
 
 // Post an event
+// TODO Add picture of player
 func (v View) postUpdate(phrase string) {
 	log.Printf("Posting %s", phrase)
 	_, _, err := v.client.Statuses.Update(phrase, nil)
@@ -38,7 +39,7 @@ func (v View) postUpdate(phrase string) {
 	}
 }
 
-func getPhraseKill(apis []models.FighterApi) string {
+func getPhraseKill(apis []*models.FighterApi) string {
 	phrase, err := repository.GetInstance().GetPhraseByN(len(apis))
 	if err != nil {
 		panic(err)
@@ -52,19 +53,15 @@ func getPhraseKill(apis []models.FighterApi) string {
 	return sentence
 }
 
-func (v View) PostKillUpdate(apis []models.FighterApi) {
+func (v View) PostKillUpdate(apis []*models.FighterApi) {
 	phrase := getPhraseKill(apis)
 	v.postUpdate(phrase)
 }
 
-func (v View) PostWinUpdate(apis []models.FighterApi) {
+func (v View) PostWinUpdate(api *models.FighterApi) {
 	var phrase *models.Phrase
-	if len(apis) == 1 {
-		phrase, _ = models.NewPhrase("$1 ha ganado")
-	} else {
-		phrase, _ = models.NewPhrase("$1 y $2 han ganado")
-	}
+	phrase, _ = models.NewPhrase("$1 ha ganado")
 
-	sentence, _ := phrase.MapToPlayers(apis...)
+	sentence, _ := phrase.MapToPlayers(api)
 	v.postUpdate(sentence)
 }

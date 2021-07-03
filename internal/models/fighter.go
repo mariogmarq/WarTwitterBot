@@ -11,11 +11,10 @@ import (
 // count
 type Fighter struct {
 	gorm.Model
-	Name       string
-	Picture    string
-	Alive      bool
-	TeammateId uint
-	Killcount  uint
+	Name      string
+	Picture   string
+	Alive     bool
+	Killcount uint
 }
 
 type FighterApi struct {
@@ -31,11 +30,10 @@ func NewFighter(picture string) (*Fighter, error) {
 		return nil, err
 	}
 	return &Fighter{
-		Name:       name,
-		Picture:    picture,
-		Alive:      true,
-		TeammateId: 0, //Gorm first index is 1
-		Killcount:  0,
+		Name:      name,
+		Picture:   picture,
+		Alive:     true,
+		Killcount: 0,
 	}, nil
 }
 
