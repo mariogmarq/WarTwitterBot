@@ -58,6 +58,7 @@ func turn() {
 	if haveAWinner(ids) {
 		winnerMessage(ids[0])
 		close(playing)
+		return
 	}
 
 	// fighters that interact in the kill

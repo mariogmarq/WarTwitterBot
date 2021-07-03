@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/dghubble/go-twitter/twitter"
-	"golang.org/x/oauth2/clientcredentials"
+	"github.com/dghubble/oauth1"
 )
 
 type View struct {
@@ -18,15 +18,8 @@ type View struct {
 }
 
 func CreateClient() View {
-	config := &clientcredentials.Config{
-		ClientID:     os.Getenv("CONSUMER_KEY"),
-		ClientSecret: os.Getenv("CONSUMER_SECRET"),
-		TokenURL:     "https://api.twitter.com/oauth2/token",
-	}
-	log.Println(config.ClientID)
-	log.Println(config.ClientSecret)
-
-	httpClient := config.Client(context.Background())
+	config := oauth1.NewConfig(os.Getenv("CONSUMER_KEY"), os.Getenv("CONSUMER_SECRET"))
+	httpClient := config.Client(context.TODO(), oauth1.NewToken(os.Getenv("ACCESS_TOKEN"), os.Getenv("ACCESS_SECRET")))
 
 	client := twitter.NewClient(httpClient)
 

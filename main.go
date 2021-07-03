@@ -13,5 +13,6 @@ func main() {
 		twitterClient.PostKillUpdate(message)
 	}
 
-	twitterClient.PostWinUpdate(<-win)
+	message := <-win
+	twitterClient.PostWinUpdate(message)
 }
