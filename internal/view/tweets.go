@@ -6,6 +6,7 @@ import (
 	"github/mariogmarq/WarTwitterBot/internal/models"
 	"github/mariogmarq/WarTwitterBot/internal/repository"
 	"log"
+	"net/http"
 	"os"
 	"time"
 
@@ -14,7 +15,8 @@ import (
 )
 
 type View struct {
-	client *twitter.Client
+	client     *twitter.Client
+	httpclient *http.Client
 }
 
 func CreateClient() View {
@@ -23,14 +25,14 @@ func CreateClient() View {
 
 	client := twitter.NewClient(httpClient)
 
-	return View{client}
+	return View{client, httpClient}
 }
 
 // Post an event
-// TODO Add picture of player
-func (v View) postUpdate(phrase string) {
+func (v View) postUpdate(phrase string, image ...string) {
 	log.Printf("Posting %s", phrase)
-	_, _, err := v.client.Statuses.Update(phrase, nil)
+
+	_, _, err := v.client.Statuses.Update(phrase, &twitter.StatusUpdateParams{})
 
 	for err != nil {
 		log.Println(err.Error())

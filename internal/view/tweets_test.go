@@ -9,7 +9,7 @@ func TestCreateClient(t *testing.T) {
 	wrapper := CreateClient()
 	client := wrapper.client
 
-	_, _, err := client.Statuses.Update("Hola", nil)
+	_, _, err := client.Accounts.VerifyCredentials(nil)
 	if err != nil {
 		t.Fatalf("%s", err.Error())
 	}
